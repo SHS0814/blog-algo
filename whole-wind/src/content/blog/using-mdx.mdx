@@ -1,0 +1,38 @@
+---
+title: 'Binary Search — Proof and Implementation'
+description: 'Invariant, correctness proof, complexity, and code.'
+pubDate: '2025-10-17'
+heroImage: '../../assets/blog-placeholder-5.jpg'
+tags: ['binary-search', 'array', 'search']
+difficulty: easy
+draft: false
+---
+
+We maintain the invariant: after each iteration, if the target exists, it lies in `[left, right]`.
+
+Correctness sketch:
+
+1. Initially, the whole array is the candidate range.
+2. Each step discards half while preserving the invariant.
+3. Termination occurs when `left > right`; if not found earlier, the target is absent.
+
+Complexity: $O(\log n)$ comparisons, $O(1)$ space.
+
+```ts
+export function binarySearch(arr: number[], target: number): number {
+  let left = 0;
+  let right = arr.length - 1;
+  while (left <= right) {
+    const mid = left + Math.floor((right - left) / 2);
+    if (arr[mid] === target) return mid;
+    if (arr[mid] < target) left = mid + 1; else right = mid - 1;
+  }
+  return -1;
+}
+```
+
+Master theorem example for recurrences:
+
+$$
+T(n) = 2T(n/2) + O(n) = O(n\log n)
+$$

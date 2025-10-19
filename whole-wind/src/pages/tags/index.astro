@@ -1,0 +1,57 @@
+---
+import { getCollection } from 'astro:content';
+import BaseHead from '../../components/BaseHead.astro';
+import Footer from '../../components/Footer.astro';
+import Header from '../../components/Header.astro';
+import { SITE_DESCRIPTION, SITE_TITLE } from '../../consts';
+
+const posts = (await getCollection('blog')).filter((p) => !p.data.draft);
+const tagToCount = new Map<string, number>();
+for (const p of posts) {
+	for (const t of p.data.tags ?? []) tagToCount.set(t, (tagToCount.get(t) ?? 0) + 1);
+}
+const tags = Array.from(tagToCount.entries()).sort((a, b) => b[1] - a[1]);
+---
+
+<!doctype html>
+<html lang="en">
+	<head>
+		<BaseHead title={`Tags — ${SITE_TITLE}`} description={SITE_DESCRIPTION} />
+		<style>
+			.tags {
+				width: 720px;
+				max-width: calc(100% - 2em);
+				margin: 2rem auto;
+				padding: 0;
+				list-style: none;
+				display: flex;
+				flex-wrap: wrap;
+				gap: 0.75rem;
+			}
+			.tag {
+				padding: 0.4rem 0.7rem;
+				border: 1px solid rgb(var(--gray));
+				border-radius: 999px;
+			}
+			.tag a {
+				text-decoration: none;
+			}
+		</style>
+	</head>
+	<body>
+		<Header />
+		<main>
+			<section>
+				<h1 style="text-align:center">Browse by Tag</h1>
+				<ul class="tags">
+					{tags.map(([tag, count]) => (
+						<li class="tag"><a href={`/tags/${encodeURIComponent(tag)}/`}>{tag} ({count})</a></li>
+					))}
+				</ul>
+			</section>
+		</main>
+		<Footer />
+	</body>
+</html>
+
+
